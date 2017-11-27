@@ -55,7 +55,7 @@
 		foreach( $arrItem as $key => $val )
 		{
 ?>
-                                <option value="<?php echo $val['mail_type']; ?>"><?php echo $val['t_name']; ?></option>
+                                <option value="<?php echo $val['mail_type']; ?>"><?php echo ( $val['t_name'] ? $val['t_name'] : $val['mail_type'] ); ?></option>
 <?php
 		}
 	}

@@ -478,6 +478,7 @@ $(document).ready(function () {
 								text: "지급처리가 완료되었습니다.",
 								type: "success"
 							}, function () {
+                                $('#modal-hins').modal('hide');
 								$('#heroinfo').dataTable().api().ajax.reload();
 							});
 						}

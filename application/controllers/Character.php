@@ -1,6 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-require_once('/var/www/html/application/libraries/Redis.php');
 class Character extends MY_Controller {
 
 	/**
@@ -41,7 +40,6 @@ class Character extends MY_Controller {
 			$mappingArray = array(
 				'uid' => '회원번호',
 				'nickname' => '닉네임',
-				'lv/exp' => '레벨/경험치',
 				'pcash' => '유료 캐시',
 				'fcash' => '무료 캐시',
 				'tbp' => '총 결제 금액',
@@ -51,7 +49,6 @@ class Character extends MY_Controller {
 		{
 			$mappingArray = array(
 				'email' => '계정',
-				'school' => '학교',
 				'star/tp_free' => '별/트로피',
 				'gold' => '보유 골드',
 				't_iv_cnt' => '친구 초대 수',
@@ -822,7 +819,7 @@ class Character extends MY_Controller {
 
 	public function heroinfo()
 	{
-		$heroArray = $this->cimongo->where( array( "b" => new MongoInt32(1) ) )->get('rs_table_hero')->result_array();
+		$heroArray = $this->cimongo->where( array( "b" => new MongoInt32(1) ) )->get('rs_table_hero_g')->result_array();
 		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'),
 		'heroArray' => $heroArray );
 
@@ -832,7 +829,7 @@ class Character extends MY_Controller {
 	public function gradelist()
 	{
 		$basehid = substr($this->input->post('hid'), 0, strlen($this->input->post('hid')) - 2 );
-		$skillArray = $this->cimongo->where_between( 'hid', new MongoInt32( $basehid.'00' ), new MongoInt32( $basehid.'09' ) )->get('rs_table_hero_skill')->result_array();
+		$skillArray = $this->cimongo->where_between( 'hid', new MongoInt32( $basehid.'00' ), new MongoInt32( $basehid.'09' ) )->get('rs_table_hero_g_skill')->result_array();
 
 		echo json_encode( $skillArray, JSON_UNESCAPED_UNICODE );
 	}
@@ -850,7 +847,7 @@ class Character extends MY_Controller {
 			foreach ( $rowArray as $key => $val )
 			{
 				$basehid = substr($val['hid'], 0, strlen($val['hid']) - 2 ).'00';
-				$heroArray = $this->cimongo->where( array( 'hid' => new MongoInt32($basehid) ) )->get('rs_table_hero')->result_array();
+				$heroArray = $this->cimongo->where( array( 'hid' => new MongoInt32($basehid) ) )->get('rs_table_hero_g')->result_array();
 				$invenArray = $this->cimongo->where( array( 'uid' => $this->session->userdata('searchuid') ) )->get('inventory')->result_array();
 
 				if ( !empty( $heroArray ) )
@@ -887,7 +884,7 @@ class Character extends MY_Controller {
 				{
 					$rowArray[$key]['soulstone'] = 0;
 				}
-				$rowArray[$key]['ability'] = $heroArray[0]['a_sk_n'];
+				$rowArray[$key]['ability'] = $heroArray[0]['b_sk_n'];
 				if ( array_key_exists('sk_n', $heroArray[0]) )
 				{
 					$rowArray[$key]['sk_n'] = $heroArray[0]['sk_n'];

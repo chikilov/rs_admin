@@ -45,10 +45,6 @@
                 </tbody>
             </table>
         </div>
-		<div class="row" style="min-height: 50px;margin-right: 10px;">
-	        <button class="btn btn-info" data-toggle="modal" data-target="#modal-ssedit" style="margin-left:10px;float:right" type="button">영혼석 추가</button>
-	        <button class="btn btn-info" data-toggle="modal" data-target="#modal-hins" style="margin-right:10px;float:right" type="button">히어로 추가</button>
-	    </div>
     </div>
     <!-- END All Orders -->
 </div>
