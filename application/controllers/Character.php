@@ -971,7 +971,7 @@ class Character extends MY_Controller {
 
 	public function stagelist()
 	{
-		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid'), 'th' => new MongoInt32(1)) )->get('stage_clear')->result_array();
+		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid'), 'th' => new MongoInt32(1000)) )->get('stage_clear')->result_array();
 
 		$rowArray = array();
 		foreach ( $query as $row )
