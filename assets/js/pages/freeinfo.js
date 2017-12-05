@@ -108,18 +108,64 @@ var HeroInfoDatatables = function() {
 			},
 			columns: [
 				{"className" : "text-center", "data" : "t_song", "searchable": true},
-				{"className" : "text-center", "data" : "th", "searchable": true, "render": function (data, type, row, meta) {
-					return ( data == 8000 ? '3' : ( data == 8001 ? '4' : ( data == 8002 ? '5' : ( data == 9000 ? '6' : ( data == 9001 ? '9' : '??' ) ) ) ) ) + 'key';
-				}},
+				{"className" : "text-center", "data" : "key", "searchable": true},
 				{"className" : "text-center", "data" : "diff", "searchable": true},
-				{"className" : "text-center", "data" : "u_at", "searchable": true},
-				{"className" : "text-center", "data" : "tp", "searchable": true},
-				{"className" : "text-center", "data" : "pc", "searchable": true},
-				{"className" : "text-center", "data" : "cc", "searchable": true},
-				{"className" : "text-center", "data" : "fc", "searchable": true},
-				{"className" : "text-center", "data" : "tc", "searchable": true},
-				{"className" : "text-center", "data" : "cfc", "searchable": true},
-				{"className" : "text-center", "data" : "hs", "searchable": true}
+				{"className" : "text-center", "data" : "u_at", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return moment.unix(row.u_at.sec).format('YYYY-MM-DD HH:mm:ss');
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "tp", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.tp;
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "pc", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.pc;
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "cc", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.cc;
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "fc", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.fc;
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "tc", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.tc;
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "cfc", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.cfc;
+    				} else {
+        				return '';
+    				}
+				}},
+				{"className" : "text-center", "data" : "hs", "searchable": true, "render": function (data, type, row, meta) {
+    				if ( typeof(data) != 'undefined' ) {
+    				    return row.hs;
+    				} else {
+        				return '';
+    				}
+				}}
 				//, "render": function (data, type, row, meta) {}
 			],
 			dom: "<'row'<'col-sm-1'l><'col-sm-6'B><'col-sm-5'f>>" +
@@ -309,10 +355,22 @@ $(document).ready(function () {
 	HeroEditValidation.init();
 	HeroInfoDatatables.init();
 
-	$(document).on('show.bs.modal', '#modal-lvedit', function (e) {
-		var button = $(e.relatedTarget);
-		$('#heroid').val(button.data('id'));
-		$('#lv').val(button.data('lv'));
+	$(document).on('show.bs.modal', '#modal-hins', function (e) {
+		$.ajax({
+    		type:'POST',
+            url:'/Character/freeGetList',
+			data:{},
+			success: function (result) {
+    			var obj = eval('(' + result + ')');
+    			$('#tid').empty();
+    			$('#bms').empty();
+    			$('#tid').append('<option value=""></option>');
+    			for( prop in obj ) {
+        			$('#tid').append('<option value="' + prop + '">' + obj[prop].t_song + '</option>');
+        			$('#tid').select2().trigger('change');
+    			}
+			}
+		});
 	});
 
 	$(document).on('click', '#btnlvEdit', function () {
@@ -346,35 +404,36 @@ $(document).ready(function () {
 		}
 	});
 
-	$(document).on('change', '#th', function () {
+	$(document).on('change', '#tid', function () {
 		if ( $(this).val() != '' )
 		{
-			var hid = $(this).val();
-			$('#tid').attr('disabled', false);
+			$('#bms').attr('disabled', false);
 			$.ajax({
-				method: "POST",
-				url: "/Character/freestagelist",
-				data: {'th':$('#th').val()},
-				dataType: 'html',
-				success: function (result) {
-					var obj = eval(result);
-					for( var i = 0; i < obj.length; i++ )
-					{
-						$('#tid').append($('<option>', { value:obj[i].id, text:obj[i].t_song.toString() }));
-					}
-				}
-			});
+        		type:'POST',
+                url:'/Character/freeGetList',
+    			data:{},
+    			success: function (result) {
+        			var obj = eval('(' + result + ')');
+        			$('#bms').empty();
+        			obj = obj[$('#tid').val()];
+                    $('#bms').append('<option value=""></option>');
+        			for( prop in obj['bms'] ) {
+            			$('#bms').append('<option value="' + Object.keys(obj['bms'][prop])[0] + '">' + obj['bms'][prop][Object.keys(obj['bms'][prop])[0]] + '</option>');
+            			$('#bms').select2().trigger('change');
+        			}
+    			}
+    		});
 		}
 		else
 		{
-			$('#tid').attr('disabled', true);
+			$('#bms').attr('disabled', true);
 		}
 	});
 
 	$(document).on('click', '#btnHIns', function () {
 		swal({
             title: "Are you sure?",
-            text: 'UID : ' + $('#searchuid').val() + '\n해금곡 : ' + $('#tid > option:selected').text() + ' - (' + $('#th > option:selected').text() + ')\n해금 하시겠습니까?',
+            text: 'UID : ' + $('#searchuid').val() + '\n해금곡 : ' + $('#tid > option:selected').text() + ' - (' + $('#bms > option:selected').text() + ')\n해금 하시겠습니까?',
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
@@ -387,7 +446,7 @@ $(document).ready(function () {
 				$.ajax({
 					method: "POST",
 					url: "/Character/sendfreestage",
-					data: {'th':$('#th > option:selected').val(), 'tid':$('#tid > option:selected').val(), 'admin_memo':$('#admin_memo').val()},
+					data: {'bms':$('#bms > option:selected').val(), 'tid':$('#tid > option:selected').val(), 'admin_memo':$('#admin_memo').val()},
 					dataType: 'html',
 					success: function (result) {
 						if ( result == '1' )
@@ -398,10 +457,8 @@ $(document).ready(function () {
 								type: "success"
 							}, function () {
 								$('#modal-hins').modal('hide');
-								$('#th').val('').trigger('change');
-								$('#tid > option:selected').remove();
 								$('#tid').val('').trigger('change');
-								$('#tid').val('').trigger('change');
+								$('#bms').val('').trigger('change');
 								$('#admin_memo').val('');
 								$('#freeinfo').dataTable().api().ajax.reload();
 							});

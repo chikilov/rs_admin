@@ -148,4 +148,8 @@ class MY_Controller extends CI_Controller {
 		return $arrAuth;
 	}
 
+	function array_remove_by_value($array, $value) {
+        return array_values(array_diff($array, array($value)));
+    }
+
 }

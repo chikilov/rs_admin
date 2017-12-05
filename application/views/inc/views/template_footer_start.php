@@ -38,6 +38,8 @@
 <!-- Page JS Code -->
 <script src="<?php echo $one->assets_folder; ?>/js/pages/search_tables_datatables.js"></script>
 <script src="<?php echo $one->assets_folder; ?>/js/pages/base_ui_activity.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/locale/ko.js"></script>
 <script>
     jQuery(function(){
         // Init page helpers (BS Datepicker + BS Datetimepicker + BS Colorpicker + BS Maxlength + Select2 + Masked Input + Range Sliders + Tags Inputs plugins)

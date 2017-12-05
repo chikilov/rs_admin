@@ -92,25 +92,13 @@
 				            <div class="form-group">
 			                    <div class="col-xs-12">
 			                        <div class="col-xs-6 form-material">
-			                            <select class="js-select2 form-control" id="th" name="th" style="width: 100%;" data-placeholder="Choose one..">
+			                            <select class="js-select2 form-control" id="tid" name="tid" style="width: 100%;" data-placeholder="Choose one..">
 			                                <option></option><!-- Required for data-placeholder attribute to work with Select2 plugin -->
-<?php
-	foreach( $freemode as $key => $val )
-	{
-		if ( $val == '' )
-		{
-			continue;
-		}
-?>
-			                                <option value="<?php echo $val; ?>"><?php echo $key.'Key'; ?></option>
-<?php
-	}
-?>
 			                            </select>
 			                            <label for="hid2">해금대상곡 선택</label>
 			                        </div>
 			                        <div class="col-xs-6 form-material">
-			                            <select class="js-select2 form-control" id="tid" name="tid" style="width: 100%;" disabled="true" data-placeholder="Choose one..">
+			                            <select class="js-select2 form-control" id="bms" name="bms" style="width: 100%;" disabled="true" data-placeholder="Choose one..">
 			                                <option></option><!-- Required for data-placeholder attribute to work with Select2 plugin -->
 			                            </select>
 			                        </div>

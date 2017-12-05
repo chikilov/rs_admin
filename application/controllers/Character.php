@@ -1004,6 +1004,43 @@ class Character extends MY_Controller {
 		echo json_encode( $rowArray, JSON_UNESCAPED_UNICODE );
 	}
 
+    public function freeGetList() {
+        $songList = array();
+    	for( $i = 1; $i < 10; $i++ ) {
+        	$rows = $this->cimongo->get('rs_table_stage_list_110'.$i)->result_array();
+        	foreach ( $rows as $row ) {
+            	if ( array_key_exists('bms', $row) ) {
+                	if ( isset( $songList[$row['id']] ) ) {
+                	    array_push($songList[$row['id']], $i);
+                	    array_push($displayList[$row['id']]['bms'], array( $i => $row['bms'] ));
+                	} else {
+                    	$songList[$row['id']] = array($i);
+                    	$displayList[$row['id']] = array( 't_song' => $row['t_song'], 'bms' => array( array( $i => $row['bms'] ) ) );
+                	}
+            	}
+        	}
+    	}
+
+		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid')) )->get('song_book')->result_array();
+		if ( empty( $query ) === false ) {
+    		foreach ( $query as $row ) {
+        		foreach ( $row['songs'] as $key => $val ) {
+            		foreach ( $this->getSqrt($val) as $vval ) {
+                		$searchKey = array_search($vval, $songList[$key]);
+                		if ( $searchKey !== false ) {
+                            unset($songList[$key][$searchKey]);
+                            unset($displayList[$key]['bms'][$searchKey]);
+                            $songList[$key] = array_values($songList[$key]);
+                            $displayList[$key]['bms'] = array_values($displayList[$key]['bms']);
+                		}
+                    }
+        		}
+    		}
+		}
+
+		echo json_encode( $displayList, JSON_UNESCAPED_UNICODE );
+    }
+
 	public function freeinfo()
 	{
 		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'), 'freemode' => FREEMODEARRAY );
@@ -1013,30 +1050,35 @@ class Character extends MY_Controller {
 
 	public function freelist()
 	{
-		$freeMode = array_filter( FREEMODEARRAY );
-		foreach ( $freeMode as $key => $val )
-		{
-			$freeMode[$key] = new MongoInt32( intval($val) );
-		}
-		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid')) )->where_in('th', array_values( $freeMode ))->get('stage_clear')->result_array();
+		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid')) )->get('song_book')->result_array();
 		$rowArray = array();
-		foreach ( $query as $row )
-		{
-			if ( !array_key_exists('u_at', $row) )
-			{
-				$row['u_at'] = '-';
-			}
-			else
-			{
-				$row['u_at'] = $row['u_at']->toDateTime()->format('Y-m-d H:i:s');
-			}
-			$stage_id = intval( substr($row['tid'], -4) );
-			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_stage_list_'.$row['th'])->result_array();
-			foreach( $subRow[0] as $key => $val )
-			{
-				$row[$key] = $val;
-			}
-			array_push($rowArray, $row);
+		if ( empty( $query ) === false ) {
+    		foreach ( $query as $row ) {
+        		foreach ( $row['songs'] as $key => $val ) {
+                    $songList[$key] = $this->getSqrt($val);
+        		}
+    		}
+		}
+		if ( empty( $songList ) === false ) {
+    		foreach ( $songList as $keys => $vals ) {
+        		foreach ( $vals as $val ) {
+            		$th = '110'.$val;
+            		$tid = $th.substr('0000'.$key, -4, 4);
+                    $subRow = $this->cimongo->where( array('id' => $keys) )->get('rs_table_stage_list_'.$th)->result_array();
+                    if ( array_key_exists( 'bms', $subRow[0] ) ) {
+            			$key = $subRow[0]['key'];
+            			$diff = $subRow[0]['diff'];
+            			$addRow = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid'), 'tid' => (int)($tid)) )->get('stage_clear')->result_array();
+            			if ( empty($addRow) === false ) {
+            			    $addRow = $addRow[0];
+            			}
+        		        $addRow['t_song'] = $subRow[0]['t_song'];
+        		        $addRow['key'] = $key;
+        		        $addRow['diff'] = $diff;
+            			array_push($rowArray, $addRow);
+                    }
+        		}
+            }
 		}
 
 		echo json_encode( $rowArray, JSON_UNESCAPED_UNICODE );
@@ -1056,21 +1098,19 @@ class Character extends MY_Controller {
 
 	public function sendfreestage()
 	{
-		$stage_id = ( intval($this->input->post('th')) * 10000 ) + intval( $this->input->post('tid') );
+    	$query = $this->cimongo->where( array( 'uid' => $this->session->userdata('searchuid') ) )->get('song_book')->result_array();
+    	$query = $query[0];
+    	$pos = intval( intval($this->input->post('bms')) % 100 - 1 );
+
+    	if ( array_key_exists( $this->input->post('tid'), $query['songs'] ) ) {
+        	$query['songs'][strval($this->input->post('tid'))] += pow(10, $pos);
+    	} else {
+        	$query['songs'][strval($this->input->post('tid'))] = pow(10, $pos);
+		}
+
 		$this->load->model('Model_Admin', 'dbAdmin');
-		$this->dbAdmin->adminLoginsert( '자유모드해금', 'tid => '.$stage_id.' admin_memo => '.$this->input->post('admin_memo'), $this->session->userdata('searchuid') );
-		echo boolval( $this->cimongo->insert( 'stage_clear', array(
-				'uid' => $this->session->userdata('searchuid'),
-				'th' => new MongoInt32( $this->input->post('th') ),
-				'tid' => new MongoInt32( ( intval($this->input->post('th')) * 10000 ) + intval( $this->input->post('tid') ) ),
-				'st' => new MongoInt32(0), 'tp' => new MongoInt32(0), 'c_at' => new MongoDate(), 'pc' => new MongoInt32(0),
-				'tc' => new MongoInt32(0), 'cc' => new MongoInt32(0), 'fc' => new MongoInt32(0), 'cfc' => new MongoInt32(0),
-				'cg' => new MongoInt32(0), 'gi' => new MongoInt32(0), 'h1' => new MongoInt32(0), 'h2' => new MongoInt32(0),
-				'h3' => new MongoInt32(0), 'h1s' => new MongoInt32(0), 'h2s' => new MongoInt32(0), 'h3s' => new MongoInt32(0),
-				'hs' => new MongoInt32(0), 'a' => floatval(0.0), 'cb' => new MongoInt32(0), 'gds' => array(0, 0, 0, 0, 0, 0, 0),
-				'wc' => new MongoInt32(0), 'ec' => new MongoInt32(0), 'lp' => new MongoInt32(0), 'uct' => new MongoInt64(0),
-				'ver' => new MongoInt64(0)
-		) ) );
+		$this->dbAdmin->adminLoginsert( '음악 오픈', 'tid => '.$this->input->post('tid').' bms => '.$this->input->post('bms').' admin_memo => '.$this->input->post('admin_memo'), $this->session->userdata('searchuid') );
+        echo boolval( $this->cimongo->where( array( 'uid' => $this->session->userdata('searchuid') ) )->set( array( 'songs.'.strval($this->input->post('tid')) => $query['songs'][strval($this->input->post('tid'))] ) )->update('song_book') );
 	}
 
 	public function schoolinfo()
@@ -1140,6 +1180,20 @@ class Character extends MY_Controller {
 		{
 			echo json_encode( array(), JSON_UNESCAPED_UNICODE );
 		}
+	}
+
+	public function getSqrt( $value ) {
+    	$i = 1;
+    	$rtnArray = array();
+    	while ( $value >= 1 ) {
+        	if ( $value % 10 !== 0 ) {
+            	array_push( $rtnArray, $i );
+        	}
+        	$value = intval( $value / 10 );
+        	$i++;
+    	}
+
+    	return $rtnArray;
 	}
 }
 ?>
