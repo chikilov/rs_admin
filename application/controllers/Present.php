@@ -367,7 +367,7 @@ class Present extends MY_Controller {
 	public function userfileupload()
 	{
 		$error = false;
-		$uploaddir = '/var/www/html/assets/upload/';
+		$uploaddir = $_SERVER['DOCUMENT_ROOT'].'/assets/upload/';
 	    foreach($_FILES as $file)
 	    {
 		    $tempname = $this->generateRandomString(20);
@@ -405,6 +405,68 @@ class Present extends MY_Controller {
 		        echo $rowData[0][0].PHP_EOL;
 		    }
 		}
+	}
+
+	public function convertfileupload()
+	{
+		$error = false;
+		$uploaddir = $_SERVER['DOCUMENT_ROOT'].'/assets/upload/';
+	    foreach($_FILES as $file)
+	    {
+		    $tempname = $this->generateRandomString(20);
+		    $tempname .= '.'.pathinfo($file['name'], PATHINFO_EXTENSION);
+	        if(move_uploaded_file($file['tmp_name'], $uploaddir.$tempname))
+	        {
+	            $files[] = $uploaddir.$tempname;
+	        }
+	        else
+	        {
+	            $error = true;
+	        }
+	    }
+
+	    $data = ($error) ? array('error' => 'There was an error uploading your files') : array('files' => $files);
+
+		$this->load->library("PHPExcel");
+		$objPHPExcel = new PHPExcel();
+		$objPHPExcel = PHPExcel_IOFactory::load($uploaddir.$tempname);
+		$sheetsCount = $objPHPExcel->getSheetCount();
+
+		/* 쉬트별로 읽기 */
+		for($i = 0; $i < $sheetsCount; $i++)
+		{
+		    $objPHPExcel->setActiveSheetIndex($i);
+		    $sheet = $objPHPExcel->getActiveSheet();
+		    $highestRow = $sheet->getHighestRow();
+		    $highestColumn = $sheet->getHighestColumn();
+
+		    /* 한줄읽기 */
+		    for ($row = 1; $row <= $highestRow; $row++)
+		    {
+		        /* $rowData가 한줄의 데이터를 셀별로 배열처리 됩니다. */
+		        $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE)[0];
+		        if ( $row > 1 ) {
+    		        if ( $rowData[0] === null && $rowData[1] !== null ) {
+        		        $result = $this->cimongo->where( array( 'nickname' => $rowData[1] ) )->get('user')->result_array();
+        		        if ( count( $result ) === 1 ) {
+        		            $objPHPExcel->getActiveSheet()->setCellValue('A'.$row, $result[0]['uid']);
+        		        } else if ( count( $result ) > 1 ) {
+            		        $objPHPExcel->getActiveSheet()->setCellValue('A'.$row, '중복발생');
+        		        }
+    		        } else if ( $rowData[1] === null && $rowData[0] !== null ) {
+        		        $result = $this->cimongo->where( array( 'uid' => $rowData[0] ) )->get('user')->result_array();
+        		        if ( count( $result ) === 1 ) {
+        		            $objPHPExcel->getActiveSheet()->setCellValue('B'.$row, $result[0]['nickname']);
+        		        } else if ( count( $result ) > 1 ) {
+            		        $objPHPExcel->getActiveSheet()->setCellValue('B'.$row, '중복발생');
+        		        }
+    		        }
+		        }
+		    }
+		}
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($uploaddir.$tempname);
+		echo $_SERVER['HTTP_HOST'].'/assets/upload/'.$tempname;
 	}
 
 	public function sendpresent()
@@ -489,4 +551,10 @@ class Present extends MY_Controller {
 		}
 		echo json_encode( $rowArray, JSON_UNESCAPED_UNICODE );
 	}
+
+	public function convertXls()
+	{
+		$this->load->view('convertxls', null);
+	}
+
 }

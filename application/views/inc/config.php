@@ -72,7 +72,6 @@ foreach( $arrMenu as $key => $val )
 		$changerow['name'] = $val['_title'];
 		$changerow['url'] = '/'.$val['_controller'].'/'.$val['_view'];
 	}
-
 	if ( $val['_icon'] !== null ) $changerow['icon'] = $val['_icon'];
 
 	$arrMenu[$key] = $changerow;

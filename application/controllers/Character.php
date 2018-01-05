@@ -986,9 +986,12 @@ class Character extends MY_Controller {
 			}
 			$stage_id = intval( substr($row['tid'], -4) );
 			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_stage_list_'.$row['th'])->result_array();
-			foreach( $subRow[0] as $key => $val )
+			if ( !empty( $subRow ) )
 			{
-				$row[$key] = $val;
+    			foreach( $subRow[0] as $key => $val )
+    			{
+    				$row[$key] = $val;
+    			}
 			}
 			$subRow2 = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_stage_lv_'.$row['th'])->result_array();
 			if ( !empty( $subRow2 ) )
@@ -1195,5 +1198,78 @@ class Character extends MY_Controller {
 
     	return $rtnArray;
 	}
+
+	public function bossinfo()
+	{
+		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'));
+
+		$this->load->view('bossinfo', $arrayParam);
+	}
+
+	public function bosslist()
+	{
+		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid'), 'th' => new MongoInt32(1900)) )->get('stage_clear')->result_array();
+
+		$rowArray = array();
+		foreach ( $query as $row )
+		{
+			if ( !array_key_exists('u_at', $row) )
+			{
+				$row['u_at'] = '-';
+			}
+			else
+			{
+				$row['u_at'] = $row['u_at']->toDateTime()->setTimezone(new DateTimeZone('Asia/Seoul'))->format('Y-m-d H:i:s');
+			}
+			$stage_id = intval( substr($row['tid'], -4) );
+			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_boss')->result_array();
+			if ( empty( $subRow ) === false ) {
+    			foreach( $subRow[0] as $key => $val )
+    			{
+    				$row[$key] = $val;
+    			}
+                array_push($rowArray, $row);
+			}
+		}
+
+		echo json_encode( $rowArray, JSON_UNESCAPED_UNICODE );
+	}
+
+	public function challengeinfo()
+	{
+		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'));
+
+		$this->load->view('challengeinfo', $arrayParam);
+	}
+
+	public function challengelist()
+	{
+		$query = $this->cimongo->where( array('uid' => $this->session->userdata('searchuid'), 'th' => new MongoInt32(1901)) )->get('stage_clear')->result_array();
+
+		$rowArray = array();
+		foreach ( $query as $row )
+		{
+			if ( !array_key_exists('u_at', $row) )
+			{
+				$row['u_at'] = '-';
+			}
+			else
+			{
+				$row['u_at'] = $row['u_at']->toDateTime()->setTimezone(new DateTimeZone('Asia/Seoul'))->format('Y-m-d H:i:s');
+			}
+			$stage_id = intval( substr($row['tid'], -4) );
+			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_challenge')->result_array();
+			if ( empty( $subRow ) === false ) {
+    			foreach( $subRow[0] as $key => $val )
+    			{
+    				$row[$key] = $val;
+    			}
+                array_push($rowArray, $row);
+			}
+		}
+
+		echo json_encode( $rowArray, JSON_UNESCAPED_UNICODE );
+	}
+
 }
 ?>
