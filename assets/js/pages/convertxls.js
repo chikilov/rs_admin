@@ -158,8 +158,8 @@ $(document).ready(function () {
 					contentType: false,
 					processData: false,
 					success:  function(data){
-						$('#uidshow').val(data);
-						$('#uidgroup').val(data);
+    					$('#uidshow').attr('href', 'http://' + data);
+						$('#uidshow').html(data);
 					}
 				});
 			}
