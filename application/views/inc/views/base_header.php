@@ -60,19 +60,19 @@
                 </div>
         </li>
         <li class="js-header-search header-search" style="margin: 7px 0 0 12px;width:40px;">
-            <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
-                <span>UID : </span>
-            </div>
-        </li>
-        <li class="js-header-search header-search" style="width:180px;">
                 <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
-					<input class="form-control" type="text" id="searchuid" name="searchuid" value="<?php if( isset($searchuid) ) echo $searchuid; ?>" />
+                    <span>UID : </span>
+                </div>
+        </li>
+        <li class="js-header-search header-search" style="width:280px;">
+                <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
+    				<input class="form-control" type="text" id="searchuid" style="width:280px;" name="searchuid" value="<?php if( isset($searchuid) ) echo $searchuid; ?>" />
                 </div>
         </li>
         <li class="js-header-search header-search" style="margin: 7px 0 0 10px;width:60px;">
-            <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
-                <span>NAME : </span>
-            </div>
+                <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
+                    <span>NAME : </span>
+                </div>
         </li>
         <li class="js-header-search header-search">
                 <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
