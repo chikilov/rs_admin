@@ -117,7 +117,7 @@ var HeroInfoDatatables = function() {
 						for ( var i in row.c_cond )
 						{
 							strCond += '<br />';
-							var val = eval( 'row.c_cond.' + i );
+							var val = row.c_cond[i];
 							if ( i == 'sc' )
 							{
 								strCond += '스코어 : ' + val;
