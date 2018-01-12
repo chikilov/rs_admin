@@ -1222,7 +1222,7 @@ class Character extends MY_Controller {
 				$row['u_at'] = $row['u_at']->toDateTime()->setTimezone(new DateTimeZone('Asia/Seoul'))->format('Y-m-d H:i:s');
 			}
 			$stage_id = intval( substr($row['tid'], -4) );
-			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_boss')->result_array();
+			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_stage_list_'.new MongoInt32(1900))->result_array();
 			if ( empty( $subRow ) === false ) {
     			foreach( $subRow[0] as $key => $val )
     			{
@@ -1258,7 +1258,7 @@ class Character extends MY_Controller {
 				$row['u_at'] = $row['u_at']->toDateTime()->setTimezone(new DateTimeZone('Asia/Seoul'))->format('Y-m-d H:i:s');
 			}
 			$stage_id = intval( substr($row['tid'], -4) );
-			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_challenge')->result_array();
+			$subRow = $this->cimongo->where( array('id' => $stage_id) )->get('rs_table_stage_list_'.new MongoInt32(1901))->result_array();
 			if ( empty( $subRow ) === false ) {
     			foreach( $subRow[0] as $key => $val )
     			{
