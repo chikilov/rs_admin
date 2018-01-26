@@ -15,36 +15,20 @@ var CashRankDatatables = function() {
 				"dataSrc": ""
 			},
 			columns: [
-				{"className" : "text-center", "data" : "t_song", "searchable": true, "render": function (data, type, row, meta) {
-					return row.t_name + ( data ? ' ( ' + data + ' )' : '' );
-				}},
-				{"className" : "text-center", "data" : "hs", "searchable": true, "render": function (data, type, row, meta) {
-					return 'score : ' + row.hs + '<br />accuracy : ' + row.a + '<br />combo : ' + row.cb + '<br />miss count : not in service'
-						+ '<br />over bad : ' + (row.gds[1] + row.gds[2] + row.gds[3] + row.gds[4]) + '<br />over good : ' + (row.gds[2] + row.gds[3] + row.gds[4])
-						+ '<br />over great : ' + (row.gds[3] + row.gds[4]) + '<br />over perfect : ' + row.gds[4] + '<br />kill : ' + row.ec + '<br />monster info : not in service';
-				}},
-				{"className" : "text-center", "data" : "u_at", "searchable": true},
-				{"className" : "text-center", "data" : "st", "searchable": true},
-				{"className" : "text-center", "data" : "pc", "searchable": true, "render": function (data, type, row, meta) {
-					return '플레이 횟수 : ' + row.pc + '<br />클리어 횟수 : ' + row.cc + '<br />실패 횟수 : ' + row.fc + '<br />클리어 전까지 플레이 횟수 : ' + row.tc + '<br /> 클리어 전까지 실패 횟수 : ' + row.cfc;
-				}}
+				{"className" : "text-center", "data" : "uid", "searchable": true},
+				{"className" : "text-center", "data" : "score", "searchable": true}
 			],
 			dom: "<'row'<'col-sm-1'l><'col-sm-6'B><'col-sm-5'f>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-sm-6'i><'col-sm-6'p>>",
-	        buttons: [
-	            'copy',
-	            'excel',
-	            'csv',
-	            'pdf'
-	        ],
+	        buttons: [],
 			destroy: true,
             pagingType: "full_numbers",
             columnDefs: [ { orderable: true } ],
             autoWidth: false,
-            order: [[0, 'asc']],
-            pageLength: 10,
-            lengthMenu: [[5, 10, 15, 20], [5, 10, 15, 20]]
+            order: [[1, 'desc']],
+            pageLength: 100,
+            lengthMenu: [[5, 10, 15, 20, 50, 100], [5, 10, 15, 20, 50, 100]]
         });
     };
 

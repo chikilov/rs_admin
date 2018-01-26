@@ -33,8 +33,19 @@ class Rank extends MY_Controller {
 		{
 			$arrResult = $this->redis->command( 'ZREVRANGEBYSCORE rsg|user_rank|cash'.$this->input->post('type').' +inf -inf WITHSCORES' );
 		}
-var_dump($arrResult);
-//		echo json_encode( $arrResult, JSON_UNESCAPED_UNICODE );
+
+        $result = array();
+        $tmpkey = '';
+        $i = 0;
+        foreach ( $arrResult as $key => $val ) {
+            if ( $key % 2 === 0 ) {
+                $result[$i]['uid'] = $val;
+            } else {
+                $result[$i]['score'] = (int)$val;
+                $i++;
+            }
+        }
+		echo json_encode( $result, JSON_UNESCAPED_UNICODE );
 	}
 }
 ?>
