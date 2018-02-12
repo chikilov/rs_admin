@@ -18,6 +18,34 @@ class Rank extends MY_Controller {
 		$this->load->view('cashrank', $arrayParam);
 	}
 
+	public function freecashrank()
+	{
+		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'));
+
+		$this->load->view('freecashrank', $arrayParam);
+	}
+
+	public function paidcashrank()
+	{
+		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'));
+
+		$this->load->view('paidcashrank', $arrayParam);
+	}
+
+	public function goldrank()
+	{
+		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'));
+
+		$this->load->view('goldrank', $arrayParam);
+	}
+
+	public function magicpowderrank()
+	{
+		$arrayParam = array('searchval' => $this->session->userdata('searchval'), 'searchuid' => $this->session->userdata('searchuid'), 'searchname' => $this->session->userdata('searchname'));
+
+		$this->load->view('magicpowderrank', $arrayParam);
+	}
+
 	public function ranklist()
 	{
     	$this->redis = new CI_Redis();

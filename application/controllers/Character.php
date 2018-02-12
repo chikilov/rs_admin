@@ -954,12 +954,16 @@ class Character extends MY_Controller {
 	public function sendhero()
 	{
 		$this->load->model('Model_Admin', 'dbAdmin');
-		$this->dbAdmin->adminLoginsert( '히어로지급', 'hid => '.$this->input->post('hid').' admin_memo => '.$this->input->post('admin_memo'), $this->session->userdata('searchuid') );
-		$query = $this->cimongo->insert( 'hero', array(
-				'uid' => $this->session->userdata('searchuid'), 'hid' => new MongoInt32( $this->input->post('hid') ), 'lv' => new MongoInt32('1'), 'exp' => new MongoInt32('0'),
-				'created_at' => new MongoDate()
-		) );
-		echo boolval($query);
+		if ( $this->session->userdata('searchuid') !== '' && $this->session->userdata('searchuid') !== null ) {
+    		$this->dbAdmin->adminLoginsert( '히어로지급', 'hid => '.$this->input->post('hid').' admin_memo => '.$this->input->post('admin_memo'), $this->session->userdata('searchuid') );
+    		$query = $this->cimongo->insert( 'hero', array(
+    				'uid' => $this->session->userdata('searchuid'), 'hid' => new MongoInt32( $this->input->post('hid') ), 'lv' => new MongoInt32('1'), 'exp' => new MongoInt32('0'),
+    				'created_at' => new MongoDate()
+    		) );
+    		echo boolval($query);
+		} else {
+    		echo boolval(false);
+		}
 	}
 
 	public function stageinfo()

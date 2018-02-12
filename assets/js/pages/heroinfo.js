@@ -44,8 +44,49 @@ var HeroEditValidation = function() {
             }
         });
 
+        jQuery('#frmHIns').validate({
+            errorClass: 'help-block animated fadeInDown',
+            errorElement: 'div',
+            errorPlacement: function(error, e) {
+                jQuery(e).parents('.form-group > div').append(error);
+            },
+            highlight: function(e) {
+                var elem = jQuery(e);
+
+                elem.closest('.form-group').removeClass('has-error').addClass('has-error');
+                elem.closest('.help-block').remove();
+            },
+            success: function(e) {
+                var elem = jQuery(e);
+
+                elem.closest('.form-group').removeClass('has-error');
+                elem.closest('.help-block').remove();
+            },
+            rules: {
+	            'hid2': {
+                    required: true
+                },
+	            'grade': {
+                    required: true
+                },
+                'admin_memo2': {
+	                required: true
+                }
+            },
+            messages: {
+	            'hid2': {
+		            required: '지급할 히어로를 선택하세요.'
+	            },
+	            'grade': {
+		            required: '지급할 히어로의 등급을 선택하세요.'
+	            },
+                'admin_memo2': {
+	                required: '관리자 메모를 입력하세요.'
+                }
+            }
+        });
+
         jQuery('#frmSSEdit').validate({
-            ignore: ['input[type=hidden]'],
             errorClass: 'help-block animated fadeInDown',
             errorElement: 'div',
             errorPlacement: function(error, e) {
@@ -70,7 +111,7 @@ var HeroEditValidation = function() {
 	            'amount': {
                     required: true
                 },
-                'admin_memo2': {
+                'admin_memo3': {
 	                required: true
                 }
             },
@@ -453,6 +494,40 @@ $(document).ready(function () {
 		}
 	});
 
+	$(document).on('click', '#btnHIns', function (e) {
+		e.preventDefault();
+		if ( $('#frmHIns').valid() )
+		{
+			$.ajax({
+				type:'POST',
+				url:'/Character/sendhero',
+				data:{'hid':$('#grade > option:selected').val(), 'admin_memo':$('#admin_memo2').val()},
+				success: function (result) {
+					if ( result == '1' )
+					{
+						swal({
+							title: "Success..",
+							text: "지급처리가 완료되었습니다.",
+							type: "success"
+						}, function () {
+							$('#modal-hins').modal('hide');
+							jQuery('#heroinfo').dataTable().api().ajax.reload();
+						});
+					}
+					else
+					{
+						swal({
+							title: "Oop..",
+							text: "지급처리에 오류가 발생하였습니다.",
+							type: "error"
+						});
+					}
+				}
+			});
+		}
+	});
+
+/*
 	$(document).on('click', '#btnHIns', function () {
 		swal({
             title: "Are you sure?",
@@ -495,4 +570,5 @@ $(document).ready(function () {
 			}
 		});
 	});
+*/
 });
