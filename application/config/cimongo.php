@@ -7,7 +7,7 @@
 //$config['host'] = (ENVIRONMENT !== 'production' ? '1.234.7.211' : '172.31.18.13');
 //$config['db'] = (ENVIRONMENT !== 'production' ? 'rs_dev0' : 'rs');
 $config['host'] = (ENVIRONMENT !== 'production' ? (ENVIRONMENT !== 'testing' ? '127.0.0.1' : '127.0.0.1') : '172.31.18.13');
-$config['db'] = (ENVIRONMENT !== 'production' ? (ENVIRONMENT !== 'testing' ? 'rsg_qa' : 'rsg_qa') : 'rsg_qa');
+$config['db'] = (ENVIRONMENT !== 'production' ? (ENVIRONMENT !== 'testing' ? 'rsg_qa' : 'rsg_qa') : 'rsg');
 
 // Generally 27017
 $config['port'] = 27017;
